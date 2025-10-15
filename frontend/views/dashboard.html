@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="col-12">
+    <h1 class="mb-3">Dashboard</h1>
+  </div>
+  <div class="col-12 mb-3">
+    <div class="row g-3">
+      <div class="col-sm-6 col-md-3">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle">Total Recipes</h6>
+            <h3 id="metricRecipes">--</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="card text-white bg-success h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle">Users</h6>
+            <h3 id="metricUsers">--</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="card text-white bg-warning h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle">Avg Rating</h6>
+            <h3 id="metricRating">--</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="card text-white bg-danger h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle">Views Today</h6>
+            <h3 id="metricViews">--</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Overview</h5>
+        <div id="chartContainer" style="min-height:300px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Recent Recipes</h5>
+        <ul id="recentList" class="list-unstyled mb-0"></ul>
+      </div>
+    </div>
+  </div>
+</div>

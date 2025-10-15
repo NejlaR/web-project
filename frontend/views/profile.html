@@ -1,0 +1,112 @@
+<div class="row">
+  <div class="col-12">
+    <h2>Profile</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <img id="profileAvatar" src="" alt="avatar" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;" />
+            <h5 id="profileName">--</h5>
+            <p class="text-muted" id="profileRole">--</p>
+            <button class="btn btn-outline-primary" id="btnEditProfile">Edit Profile</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="row g-3">
+          <div class="col-12">
+            <div class="row text-center">
+              <div class="col-sm-4">
+                <div class="card profile-stat">
+                  <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                      <h6 class="mb-0">Recipes</h6>
+                      <h4 id="statRecipes">--</h4>
+                    </div>
+                    <div class="stat-icon bg-light rounded-circle p-2"><i class="bi bi-book-fill text-primary"></i></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="card profile-stat">
+                  <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                      <h6 class="mb-0">Followers</h6>
+                      <h4 id="statFollowers">--</h4>
+                    </div>
+                    <div class="stat-icon bg-light rounded-circle p-2"><i class="bi bi-people-fill text-success"></i></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="card profile-stat">
+                  <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                      <h6 class="mb-0">Following</h6>
+                      <h4 id="statFollowing">--</h4>
+                    </div>
+                    <div class="stat-icon bg-light rounded-circle p-2"><i class="bi bi-person-check-fill text-warning"></i></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h5>About</h5>
+                <p id="profileBio">--</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h5>Recent Activity</h5>
+                <ul id="profileRecent" class="list-unstyled mb-0"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editProfileForm">
+          <div class="mb-3 text-center">
+            <img id="editAvatarPreview" src="" class="rounded-circle mb-2" style="width:96px;height:96px;object-fit:cover;" />
+            <div>
+              <input type="file" id="editAvatarInput" accept="image/*" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" id="editName" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" id="editEmail" type="email" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Bio</label>
+            <textarea class="form-control" id="editBio" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" id="saveProfileBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

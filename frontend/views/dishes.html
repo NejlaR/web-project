@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+    <h2>Dishes</h2>
+    <div>
+      <button class="btn btn-success" id="btnNewDish">Add Dish</button>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="row" id="dishesList">
+      <!-- dishes will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<!-- Dish card template -->
+<template id="dishCardTpl">
+  <div class="col-sm-6 col-md-4 mb-3">
+    <div class="card card-recipe">
+      <img src="" class="card-img-top dish-img" alt="dish">
+      <div class="card-body">
+        <h5 class="card-title dish-title"></h5>
+        <p class="card-text small text-muted dish-cat"></p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="rating text-warning"></div>
+          <button class="btn btn-sm btn-outline-primary">Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
