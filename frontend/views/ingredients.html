@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+    <h2>Ingredients</h2>
+    <div>
+      <button class="btn btn-success" id="btnNewIngredient">New Ingredient</button>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <table id="ingredientsTable" class="table table-striped align-middle" style="width:100%">
+          <thead class="table-light">
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Unit</th>
+              <th>Stock</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ingredient Detail Modal -->
+  <div class="modal fade" id="ingredientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ingredient Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex">
+          <img id="ingredientImg" src="" alt="" class="me-3 border rounded" 
+               style="width:120px; height:120px; object-fit:cover;" />
+          <div>
+            <p><strong>Name:</strong> <span id="ingName"></span></p>
+            <p><strong>Stock:</strong> <span id="ingStock"></span></p>
+            <p><strong>Unit:</strong> <span id="ingUnit"></span></p>
+            <p><strong>Notes:</strong> <span id="ingNotes"></span></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Edit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #ingredientsTable img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+    transition: transform 0.2s ease-in-out;
+  }
+  #ingredientsTable img:hover {
+    transform: scale(1.1);
+  }
+</style>
