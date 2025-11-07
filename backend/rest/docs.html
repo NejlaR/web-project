@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Manager API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin:0;
+            background: #fafafa;
+        }
+        .swagger-ui .topbar {
+            background-color: #2c3e50;
+        }
+        .swagger-ui .topbar .download-url-wrapper input[type=text] {
+            border: 2px solid #34495e;
+        }
+        .swagger-ui .topbar .download-url-wrapper .download-url-button {
+            background: #34495e;
+            color: white;
+        }
+        .custom-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .custom-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .custom-header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .api-info {
+            background: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .api-info h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .endpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .endpoint-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        .endpoint-card h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        .endpoint-card p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .method-get { border-left-color: #27ae60; }
+        .method-post { border-left-color: #3498db; }
+        .method-put { border-left-color: #f39c12; }
+        .method-delete { border-left-color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="custom-header">
+        <h1>🍽️ Recipe Manager API</h1>
+        <p>Comprehensive REST API for managing recipes, ingredients, users, and reviews</p>
+    </div>
+
+    <div class="api-info">
+        <h2>📚 Quick Start Guide</h2>
+        <p>Welcome to the Recipe Manager API documentation! This API provides full CRUD operations for all entities in our recipe management system.</p>
+        
+        <h3>🚀 Key Features</h3>
+        <div class="endpoint-grid">
+            <div class="endpoint-card method-get">
+                <h3>👥 User Management</h3>
+                <p>Complete user registration, authentication, and profile management</p>
+            </div>
+            <div class="endpoint-card method-post">
+                <h3>🍳 Recipe Operations</h3>
+                <p>Create, read, update, and delete recipes with full ingredient integration</p>
+            </div>
+            <div class="endpoint-card method-put">
+                <h3>🥕 Ingredient Tracking</h3>
+                <p>Manage ingredients with usage statistics and nutritional information</p>
+            </div>
+            <div class="endpoint-card method-delete">
+                <h3>⭐ Review System</h3>
+                <p>Complete rating and review system with statistical analysis</p>
+            </div>
+        </div>
+
+        <h3>🔗 Base URL</h3>
+        <code>http://localhost/web-project/backend/rest</code>
+
+        <h3>📋 Available Endpoints</h3>
+        <ul>
+            <li><strong>Authentication:</strong> /users/login, /users/register</li>
+            <li><strong>Users:</strong> /users (GET, POST), /users/{id} (GET, PUT, DELETE)</li>
+            <li><strong>Categories:</strong> /categories (GET, POST), /categories/{id} (GET, PUT, DELETE)</li>
+            <li><strong>Ingredients:</strong> /ingredients (GET, POST), /ingredients/{id} (GET, PUT, DELETE)</li>
+            <li><strong>Recipes:</strong> /recipes (GET, POST), /recipes/{id} (GET, PUT, DELETE)</li>
+            <li><strong>Reviews:</strong> /reviews (GET, POST), /reviews/{id} (GET, PUT, DELETE)</li>
+            <li><strong>Roles:</strong> /roles (GET, POST), /roles/{id} (GET, PUT, DELETE)</li>
+        </ul>
+
+        <h3>📊 Response Format</h3>
+        <p>All API responses follow a consistent format:</p>
+        <pre><code>{
+  "success": true,
+  "data": { ... },
+  "message": "Operation completed successfully"
+}</code></pre>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            // Build a system
+            const ui = SwaggerUIBundle({
+                url: './openapi.yaml',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                tryItOutEnabled: true,
+                requestInterceptor: function(request) {
+                    // Add any default headers here if needed
+                    return request;
+                },
+                responseInterceptor: function(response) {
+                    // Process responses here if needed
+                    return response;
+                },
+                onComplete: function(system) {
+                    console.log("Swagger UI loaded successfully");
+                },
+                onFailure: function(error) {
+                    console.error("Failed to load Swagger UI:", error);
+                },
+                docExpansion: "list",
+                apisSorter: "alpha",
+                operationsSorter: "alpha",
+                supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+                validatorUrl: null,
+                showRequestHeaders: true,
+                showCommonExtensions: true
+            });
+
+            window.ui = ui;
+        };
+    </script>
+</body>
+</html>

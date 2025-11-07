@@ -1,0 +1,1391 @@
+openapi: 3.0.3
+info:
+  title: Recipe Manager API
+  description: |
+    A comprehensive REST API for managing recipes, ingredients, users, and reviews.
+    This API provides full CRUD operations for all entities in the Recipe Manager system.
+  version: 1.0.0
+  contact:
+    name: Recipe Manager Team
+    email: support@recipemanager.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost/web-project/backend/rest
+    description: Local development server
+  - url: http://localhost:8080/web-project/backend/rest
+    description: Alternative local server
+
+paths:
+  /:
+    get:
+      summary: API Information
+      description: Get basic information about the API
+      tags:
+        - General
+      responses:
+        '200':
+          description: API information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Recipe Manager API
+                  version:
+                    type: string
+                    example: 1.0.0
+                  status:
+                    type: string
+                    example: running
+                  endpoints:
+                    type: object
+
+  # USER ENDPOINTS
+  /users:
+    get:
+      summary: Get all users
+      description: Retrieve a list of all users in the system
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create new user
+      description: Create a new user in the system
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieve a specific user by their ID
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update user
+      description: Update an existing user
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete user
+      description: Delete a user from the system
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Cannot delete user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/login:
+    post:
+      summary: User login
+      description: Authenticate a user with email and password
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/register:
+    post:
+      summary: User registration
+      description: Register a new user account
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Registration failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # CATEGORY ENDPOINTS
+  /categories:
+    get:
+      summary: Get all categories
+      description: Retrieve a list of all recipe categories
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    post:
+      summary: Create new category
+      description: Create a new recipe category
+      tags:
+        - Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreate'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /categories/{id}:
+    get:
+      summary: Get category by ID
+      description: Retrieve a specific category by ID
+      tags:
+        - Categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Category found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update category
+      description: Update an existing category
+      tags:
+        - Categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryUpdate'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    delete:
+      summary: Delete category
+      description: Delete a category
+      tags:
+        - Categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /categories/with-count:
+    get:
+      summary: Get categories with recipe count
+      description: Retrieve categories along with the count of recipes in each category
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: Categories with counts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # INGREDIENT ENDPOINTS
+  /ingredients:
+    get:
+      summary: Get all ingredients
+      description: Retrieve a list of all ingredients
+      tags:
+        - Ingredients
+      responses:
+        '200':
+          description: Ingredients retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    post:
+      summary: Create new ingredient
+      description: Create a new ingredient
+      tags:
+        - Ingredients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngredientCreate'
+      responses:
+        '201':
+          description: Ingredient created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /ingredients/{id}:
+    get:
+      summary: Get ingredient by ID
+      description: Retrieve a specific ingredient by ID
+      tags:
+        - Ingredients
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ingredient ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Ingredient found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Ingredient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update ingredient
+      description: Update an existing ingredient
+      tags:
+        - Ingredients
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ingredient ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngredientUpdate'
+      responses:
+        '200':
+          description: Ingredient updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    delete:
+      summary: Delete ingredient
+      description: Delete an ingredient
+      tags:
+        - Ingredients
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ingredient ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Ingredient deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /ingredients/with-usage:
+    get:
+      summary: Get ingredients with usage statistics
+      description: Retrieve ingredients along with usage statistics
+      tags:
+        - Ingredients
+      responses:
+        '200':
+          description: Ingredients with usage retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /ingredients/most-used:
+    get:
+      summary: Get most used ingredients
+      description: Retrieve the most frequently used ingredients
+      tags:
+        - Ingredients
+      parameters:
+        - name: limit
+          in: query
+          description: Number of ingredients to return
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Most used ingredients retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # RECIPE ENDPOINTS
+  /recipes:
+    get:
+      summary: Get all recipes
+      description: Retrieve a list of all recipes
+      tags:
+        - Recipes
+      responses:
+        '200':
+          description: Recipes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    post:
+      summary: Create new recipe
+      description: Create a new recipe
+      tags:
+        - Recipes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeCreate'
+      responses:
+        '201':
+          description: Recipe created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /recipes/{id}:
+    get:
+      summary: Get recipe by ID
+      description: Retrieve a specific recipe by ID
+      tags:
+        - Recipes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Recipe found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Recipe not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update recipe
+      description: Update an existing recipe
+      tags:
+        - Recipes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeUpdate'
+      responses:
+        '200':
+          description: Recipe updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    delete:
+      summary: Delete recipe
+      description: Delete a recipe
+      tags:
+        - Recipes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Recipe deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /recipes/search:
+    get:
+      summary: Search recipes
+      description: Search for recipes by title or description
+      tags:
+        - Recipes
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /recipes/category/{categoryId}:
+    get:
+      summary: Get recipes by category
+      description: Retrieve recipes in a specific category
+      tags:
+        - Recipes
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Recipes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /recipes/user/{userId}:
+    get:
+      summary: Get recipes by user
+      description: Retrieve recipes created by a specific user
+      tags:
+        - Recipes
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User recipes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # REVIEW ENDPOINTS
+  /reviews:
+    get:
+      summary: Get all reviews
+      description: Retrieve a list of all reviews
+      tags:
+        - Reviews
+      responses:
+        '200':
+          description: Reviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    post:
+      summary: Create new review
+      description: Create a new recipe review
+      tags:
+        - Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+      responses:
+        '201':
+          description: Review created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /reviews/{id}:
+    get:
+      summary: Get review by ID
+      description: Retrieve a specific review by ID
+      tags:
+        - Reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Review ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Review found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    put:
+      summary: Update review
+      description: Update an existing review
+      tags:
+        - Reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Review ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpdate'
+      responses:
+        '200':
+          description: Review updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    delete:
+      summary: Delete review
+      description: Delete a review
+      tags:
+        - Reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Review ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Review deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /reviews/recipe/{recipeId}:
+    get:
+      summary: Get reviews for recipe
+      description: Retrieve reviews for a specific recipe
+      tags:
+        - Reviews
+      parameters:
+        - name: recipeId
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          description: Number of reviews to return
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          description: Number of reviews to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Recipe reviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /reviews/user/{userId}:
+    get:
+      summary: Get reviews by user
+      description: Retrieve reviews created by a specific user
+      tags:
+        - Reviews
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          description: Number of reviews to return
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          description: Number of reviews to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: User reviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /reviews/recipe/{recipeId}/rating:
+    get:
+      summary: Get recipe rating statistics
+      description: Retrieve rating statistics for a specific recipe
+      tags:
+        - Reviews
+      parameters:
+        - name: recipeId
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Recipe rating statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # ROLE ENDPOINTS
+  /roles:
+    get:
+      summary: Get all roles
+      description: Retrieve a list of all user roles
+      tags:
+        - Roles
+      responses:
+        '200':
+          description: Roles retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    post:
+      summary: Create new role
+      description: Create a new user role
+      tags:
+        - Roles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleCreate'
+      responses:
+        '201':
+          description: Role created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /roles/{id}:
+    get:
+      summary: Get role by ID
+      description: Retrieve a specific role by ID
+      tags:
+        - Roles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Role found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    put:
+      summary: Update role
+      description: Update an existing role
+      tags:
+        - Roles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdate'
+      responses:
+        '200':
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    delete:
+      summary: Delete role
+      description: Delete a role
+      tags:
+        - Roles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Role deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # RECIPE INGREDIENTS ENDPOINTS
+  /recipe-ingredients/recipe/{recipeId}:
+    get:
+      summary: Get ingredients for recipe
+      description: Retrieve all ingredients for a specific recipe
+      tags:
+        - Recipe Ingredients
+      parameters:
+        - name: recipeId
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Recipe ingredients retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /recipe-ingredients:
+    post:
+      summary: Add ingredient to recipe
+      description: Add an ingredient to a recipe
+      tags:
+        - Recipe Ingredients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeIngredientCreate'
+      responses:
+        '201':
+          description: Ingredient added to recipe successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /recipe-ingredients/{id}:
+    put:
+      summary: Update recipe ingredient
+      description: Update quantity/unit of an ingredient in a recipe
+      tags:
+        - Recipe Ingredients
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe Ingredient ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeIngredientUpdate'
+      responses:
+        '200':
+          description: Recipe ingredient updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    delete:
+      summary: Remove ingredient from recipe
+      description: Remove an ingredient from a recipe
+      tags:
+        - Recipe Ingredients
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe Ingredient ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Ingredient removed from recipe successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the operation was successful
+        data:
+          type: object
+          description: The response data
+        message:
+          type: string
+          description: A descriptive message about the operation
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data:
+          type: object
+          nullable: true
+          example: null
+        message:
+          type: string
+          description: Error message
+
+    UserCreate:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - role_id
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+        role_id:
+          type: integer
+          example: 3
+
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        role_id:
+          type: integer
+          example: 3
+
+    UserRegister:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+
+    CategoryCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Italian Cuisine
+        description:
+          type: string
+          example: Traditional Italian recipes
+
+    CategoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Italian Cuisine
+        description:
+          type: string
+          example: Traditional Italian recipes
+
+    IngredientCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Tomato
+        description:
+          type: string
+          example: Fresh red tomatoes
+        nutritional_info:
+          type: object
+          example: {"calories": 18, "carbs": 3.9}
+
+    IngredientUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Tomato
+        description:
+          type: string
+          example: Fresh red tomatoes
+        nutritional_info:
+          type: object
+          example: {"calories": 18, "carbs": 3.9}
+
+    RecipeCreate:
+      type: object
+      required:
+        - user_id
+        - title
+        - category_id
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Spaghetti Carbonara
+        description:
+          type: string
+          example: Classic Italian pasta dish
+        prep_minutes:
+          type: integer
+          example: 15
+        cook_minutes:
+          type: integer
+          example: 20
+        servings:
+          type: integer
+          example: 4
+        difficulty_level:
+          type: string
+          enum: [Easy, Medium, Hard]
+          example: Medium
+        category_id:
+          type: integer
+          example: 2
+        instructions:
+          type: string
+          example: Detailed cooking instructions
+        image_url:
+          type: string
+          example: https://example.com/image.jpg
+        ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              ingredient_id:
+                type: integer
+              quantity:
+                type: number
+              unit:
+                type: string
+              notes:
+                type: string
+
+    RecipeUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Spaghetti Carbonara
+        description:
+          type: string
+          example: Classic Italian pasta dish
+        prep_minutes:
+          type: integer
+          example: 15
+        cook_minutes:
+          type: integer
+          example: 20
+        servings:
+          type: integer
+          example: 4
+        difficulty_level:
+          type: string
+          enum: [Easy, Medium, Hard]
+          example: Medium
+        category_id:
+          type: integer
+          example: 2
+        instructions:
+          type: string
+          example: Detailed cooking instructions
+        image_url:
+          type: string
+          example: https://example.com/image.jpg
+
+    ReviewCreate:
+      type: object
+      required:
+        - user_id
+        - recipe_id
+        - rating
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        recipe_id:
+          type: integer
+          example: 1
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Delicious recipe!
+
+    ReviewUpdate:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Delicious recipe!
+
+    RoleCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: chef
+
+    RoleUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: chef
+
+    RecipeIngredientCreate:
+      type: object
+      required:
+        - recipe_id
+        - ingredient_id
+        - quantity
+        - unit
+      properties:
+        recipe_id:
+          type: integer
+          example: 1
+        ingredient_id:
+          type: integer
+          example: 1
+        quantity:
+          type: number
+          example: 2.5
+        unit:
+          type: string
+          example: cups
+        notes:
+          type: string
+          example: Finely chopped
+
+    RecipeIngredientUpdate:
+      type: object
+      properties:
+        quantity:
+          type: number
+          example: 2.5
+        unit:
+          type: string
+          example: cups
+        notes:
+          type: string
+          example: Finely chopped
+
+tags:
+  - name: General
+    description: General API information
+  - name: Authentication
+    description: User authentication operations
+  - name: Users
+    description: User management operations
+  - name: Categories
+    description: Recipe category operations
+  - name: Ingredients
+    description: Ingredient management operations
+  - name: Recipes
+    description: Recipe management operations
+  - name: Reviews
+    description: Recipe review operations
+  - name: Roles
+    description: User role management operations
+  - name: Recipe Ingredients
+    description: Recipe-ingredient relationship operations
