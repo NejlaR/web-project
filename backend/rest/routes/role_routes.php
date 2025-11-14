@@ -1,67 +1,106 @@
 <?php
 
 /**
- * Role Routes - Role Management
+ * ============================
+ *          ROLE ROUTES
+ * ============================
  */
 
-// Initialize service
-$roleService = new RoleService();
-
-// =============================================================================
-// ROLE CRUD ROUTES
-// =============================================================================
-
-// Get all roles
-$app->route('GET /roles', function() use ($roleService) {
-    $result = $roleService->getAll();
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Get(
+ *     path="/role",
+ *     tags={"Role"},
+ *     summary="Get all roles",
+ *     @OA\Response(response=200, description="List of roles")
+ * )
+ */
+Flight::route('GET /role', function() {
+    $result = Flight::roleService()->get_all();
+    Flight::json($result, $result['success'] ? 200 : 400);
 });
 
-// Get role by ID
-$app->route('GET /roles/@id', function($id) use ($roleService) {
-    $result = $roleService->getById($id);
-    jsonResponse($result, $result['success'] ? 200 : 404);
+/**
+ * @OA\Get(
+ *     path="/role/{id}",
+ *     tags={"Role"},
+ *     summary="Get role by ID",
+ *     @OA\Parameter(
+ *          name="id",
+ *          in="path",
+ *          required=true,
+ *          @OA\Schema(type="integer", example=1)
+ *     ),
+ *     @OA\Response(response=200, description="Role found"),
+ *     @OA\Response(response=404, description="Role not found")
+ * )
+ */
+Flight::route('GET /role/@id', function($id) {
+    $result = Flight::roleService()->get_by_id($id);
+    Flight::json($result, $result['success'] ? 200 : 404);
 });
 
-// Create new role
-$app->route('POST /roles', function() use ($roleService) {
-    $data = getRequestBody();
-    $result = $roleService->create($data);
-    jsonResponse($result, $result['success'] ? 201 : 400);
+/**
+ * @OA\Post(
+ *     path="/role",
+ *     tags={"Role"},
+ *     summary="Create a new role",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"name"},
+ *             @OA\Property(property="name", type="string", example="Admin")
+ *         )
+ *     ),
+ *     @OA\Response(response=201, description="Role created")
+ * )
+ */
+Flight::route('POST /role', function() {
+    $data = Flight::request()->data->getData();
+    $result = Flight::roleService()->add($data);
+    Flight::json($result, $result['success'] ? 201 : 400);
 });
 
-// Update role
-$app->route('PUT /roles/@id', function($id) use ($roleService) {
-    $data = getRequestBody();
-    $result = $roleService->update($id, $data);
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Put(
+ *     path="/role/{id}",
+ *     tags={"Role"},
+ *     summary="Update role",
+ *     @OA\Parameter(
+ *          name="id", 
+ *          in="path", 
+ *          required=true,
+ *          @OA\Schema(type="integer", example=2)
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             @OA\Property(property="name", type="string", example="Updated Role Name")
+ *         )
+ *     ),
+ *     @OA\Response(response=200, description="Role updated")
+ * )
+ */
+Flight::route('PUT /role/@id', function($id) {
+    $data = Flight::request()->data->getData();
+    $result = Flight::roleService()->update($data, $id);
+    Flight::json($result, $result['success'] ? 200 : 400);
 });
 
-// Delete role
-$app->route('DELETE /roles/@id', function($id) use ($roleService) {
-    $result = $roleService->delete($id);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// =============================================================================
-// ROLE UTILITY ROUTES
-// =============================================================================
-
-// Get role by name
-$app->route('GET /roles/name/@name', function($name) use ($roleService) {
-    $result = $roleService->getByName(urldecode($name));
-    jsonResponse($result, $result['success'] ? 200 : 404);
-});
-
-// Get users by role
-$app->route('GET /roles/@id/users', function($id) use ($roleService) {
-    $result = $roleService->getUsersByRole($id);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Search roles
-$app->route('GET /roles/search', function() use ($roleService) {
-    $query = $_GET['q'] ?? '';
-    $result = $roleService->search($query);
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Delete(
+ *     path="/role/{id}",
+ *     tags={"Role"},
+ *     summary="Delete role",
+ *     @OA\Parameter(
+ *          name="id", 
+ *          in="path", 
+ *          required=true,
+ *          @OA\Schema(type="integer", example=3)
+ *     ),
+ *     @OA\Response(response=200, description="Role deleted")
+ * )
+ */
+Flight::route('DELETE /role/@id', function($id) {
+    $result = Flight::roleService()->delete($id);
+    Flight::json($result, $result['success'] ? 200 : 400);
 });

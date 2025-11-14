@@ -1,115 +1,110 @@
 <?php
 
 /**
- * Ingredient Routes - Ingredient Management
+ * =============================
+ *      INGREDIENT ROUTES
+ * =============================
  */
 
-// Initialize service
-$ingredientService = new IngredientService();
-
-// =============================================================================
-// INGREDIENT CRUD ROUTES
-// =============================================================================
-
-// Get all ingredients
-$app->route('GET /ingredients', function() use ($ingredientService) {
-    $limit = $_GET['limit'] ?? 100;
-    $offset = $_GET['offset'] ?? 0;
-    
-    $result = $ingredientService->getAll($limit, $offset);
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Get(
+ *     path="/ingredients",
+ *     tags={"Ingredients"},
+ *     summary="Get all ingredients",
+ *     @OA\Response(response=200, description="List of ingredients")
+ * )
+ */
+Flight::route('GET /ingredients', function() {
+    $result = Flight::ingredientService()->get_all();
+    Flight::json($result, $result['success'] ? 200 : 400);
 });
 
-// Get ingredient by ID
-$app->route('GET /ingredients/@id', function($id) use ($ingredientService) {
-    $result = $ingredientService->getById($id);
-    jsonResponse($result, $result['success'] ? 200 : 404);
+/**
+ * @OA\Get(
+ *     path="/ingredients/{id}",
+ *     tags={"Ingredients"},
+ *     summary="Get ingredient by ID",
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="integer", example=1)
+ *     ),
+ *     @OA\Response(response=200, description="Ingredient found"),
+ *     @OA\Response(response=404, description="Ingredient not found")
+ * )
+ */
+Flight::route('GET /ingredients/@id', function($id) {
+    $result = Flight::ingredientService()->get_by_id($id);
+    Flight::json($result, $result['success'] ? 200 : 404);
 });
 
-// Create new ingredient
-$app->route('POST /ingredients', function() use ($ingredientService) {
-    $data = getRequestBody();
-    $result = $ingredientService->create($data);
-    jsonResponse($result, $result['success'] ? 201 : 400);
+/**
+ * @OA\Post(
+ *     path="/ingredients",
+ *     tags={"Ingredients"},
+ *     summary="Create a new ingredient",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"recipe_id","name"},
+ *             @OA\Property(property="recipe_id", type="integer", example=1),
+ *             @OA\Property(property="name", type="string", example="Sugar"),
+ *             @OA\Property(property="quantity", type="string", example="100g")
+ *         )
+ *     ),
+ *     @OA\Response(response=201, description="Ingredient created")
+ * )
+ */
+Flight::route('POST /ingredients', function() {
+    $data = Flight::request()->data->getData();
+    $result = Flight::ingredientService()->add($data);
+    Flight::json($result, $result['success'] ? 201 : 400);
 });
 
-// Update ingredient
-$app->route('PUT /ingredients/@id', function($id) use ($ingredientService) {
-    $data = getRequestBody();
-    $result = $ingredientService->update($id, $data);
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Put(
+ *     path="/ingredients/{id}",
+ *     tags={"Ingredients"},
+ *     summary="Update ingredient",
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="integer", example=4)
+ *     ),
+ *     @OA\RequestBody(
+ *         required=false,
+ *         @OA\JsonContent(
+ *             @OA\Property(property="recipe_id", type="integer", example=2),
+ *             @OA\Property(property="name", type="string", example="Updated Ingredient"),
+ *             @OA\Property(property="quantity", type="string", example="200g")
+ *         )
+ *     ),
+ *     @OA\Response(response=200, description="Ingredient updated")
+ * )
+ */
+Flight::route('PUT /ingredients/@id', function($id) {
+    $data = Flight::request()->data->getData();
+    $result = Flight::ingredientService()->update($data, $id);
+    Flight::json($result, $result['success'] ? 200 : 400);
 });
 
-// Delete ingredient
-$app->route('DELETE /ingredients/@id', function($id) use ($ingredientService) {
-    $result = $ingredientService->delete($id);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// =============================================================================
-// INGREDIENT SEARCH AND FILTERING ROUTES
-// =============================================================================
-
-// Search ingredients
-$app->route('GET /ingredients/search', function() use ($ingredientService) {
-    $query = $_GET['q'] ?? '';
-    $result = $ingredientService->search($query);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get ingredient by name
-$app->route('GET /ingredients/name/@name', function($name) use ($ingredientService) {
-    $result = $ingredientService->getByName(urldecode($name));
-    jsonResponse($result, $result['success'] ? 200 : 404);
-});
-
-// =============================================================================
-// INGREDIENT STATISTICS ROUTES
-// =============================================================================
-
-// Get ingredients with usage statistics
-$app->route('GET /ingredients/with-usage', function() use ($ingredientService) {
-    $result = $ingredientService->getIngredientsWithUsage();
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get most used ingredients
-$app->route('GET /ingredients/most-used', function() use ($ingredientService) {
-    $limit = $_GET['limit'] ?? 10;
-    $result = $ingredientService->getMostUsedIngredients($limit);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get recipes using ingredient
-$app->route('GET /ingredients/@id/recipes', function($id) use ($ingredientService) {
-    $result = $ingredientService->getRecipesUsingIngredient($id);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get ingredient statistics
-$app->route('GET /ingredients/@id/stats', function($id) use ($ingredientService) {
-    $result = $ingredientService->getIngredientStats($id);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// =============================================================================
-// INGREDIENT NUTRITIONAL ROUTES
-// =============================================================================
-
-// Get ingredients by nutritional criteria
-$app->route('GET /ingredients/nutrition/high-protein', function() use ($ingredientService) {
-    $result = $ingredientService->getHighProteinIngredients();
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get low calorie ingredients
-$app->route('GET /ingredients/nutrition/low-calorie', function() use ($ingredientService) {
-    $result = $ingredientService->getLowCalorieIngredients();
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get ingredients by allergen
-$app->route('GET /ingredients/allergen/@type', function($type) use ($ingredientService) {
-    $result = $ingredientService->getIngredientsByAllergen($type);
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Delete(
+ *     path="/ingredients/{id}",
+ *     tags={"Ingredients"},
+ *     summary="Delete ingredient",
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="integer", example=3)
+ *     ),
+ *     @OA\Response(response=200, description="Ingredient deleted")
+ * )
+ */
+Flight::route('DELETE /ingredients/@id', function($id) {
+    $result = Flight::ingredientService()->delete($id);
+    Flight::json($result, $result['success'] ? 200 : 400);
 });

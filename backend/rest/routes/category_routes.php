@@ -1,74 +1,91 @@
 <?php
 
 /**
- * Category Routes - Category Management
+ * ============================
+ *       CATEGORY ROUTES
+ * ============================
  */
 
-// Initialize service
-$categoryService = new CategoryService();
-
-// =============================================================================
-// CATEGORY CRUD ROUTES
-// =============================================================================
-
-// Get all categories
-$app->route('GET /categories', function() use ($categoryService) {
-    $result = $categoryService->getAll();
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Get(
+ *     path="/categories",
+ *     tags={"Categories"},
+ *     summary="Get all categories",
+ *     @OA\Response(response=200, description="List of categories")
+ * )
+ */
+Flight::route('GET /categories', function() {
+    $result = Flight::categoryService()->get_all();
+    Flight::json($result, $result['success'] ? 200 : 400);
 });
 
-// Get category by ID
-$app->route('GET /categories/@id', function($id) use ($categoryService) {
-    $result = $categoryService->getById($id);
-    jsonResponse($result, $result['success'] ? 200 : 404);
+/**
+ * @OA\Get(
+ *     path="/categories/{id}",
+ *     tags={"Categories"},
+ *     summary="Get category by ID",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=200, description="Category found"),
+ *     @OA\Response(response=404, description="Category not found")
+ * )
+ */
+Flight::route('GET /categories/@id', function($id) {
+    $result = Flight::categoryService()->get_by_id($id);
+    Flight::json($result, $result['success'] ? 200 : 404);
 });
 
-// Create new category
-$app->route('POST /categories', function() use ($categoryService) {
-    $data = getRequestBody();
-    $result = $categoryService->create($data);
-    jsonResponse($result, $result['success'] ? 201 : 400);
+/**
+ * @OA\Post(
+ *     path="/categories",
+ *     tags={"Categories"},
+ *     summary="Create a new category",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"name"},
+ *             @OA\Property(property="name", type="string", example="Desserts")
+ *         )
+ *     ),
+ *     @OA\Response(response=201, description="Category created")
+ * )
+ */
+Flight::route('POST /categories', function() {
+    $data = Flight::request()->data->getData();
+    $result = Flight::categoryService()->add($data);
+    Flight::json($result, $result['success'] ? 201 : 400);
 });
 
-// Update category
-$app->route('PUT /categories/@id', function($id) use ($categoryService) {
-    $data = getRequestBody();
-    $result = $categoryService->update($id, $data);
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Put(
+ *     path="/categories/{id}",
+ *     tags={"Categories"},
+ *     summary="Update category",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\RequestBody(
+ *         required=false,
+ *         @OA\JsonContent(
+ *             @OA\Property(property="name", type="string", example="Updated category name")
+ *         )
+ *     ),
+ *     @OA\Response(response=200, description="Category updated")
+ * )
+ */
+Flight::route('PUT /categories/@id', function($id) {
+    $data = Flight::request()->data->getData();
+    $result = Flight::categoryService()->update($data, $id);
+    Flight::json($result, $result['success'] ? 200 : 400);
 });
 
-// Delete category
-$app->route('DELETE /categories/@id', function($id) use ($categoryService) {
-    $result = $categoryService->delete($id);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// =============================================================================
-// CATEGORY STATISTICS ROUTES
-// =============================================================================
-
-// Get categories with recipe count
-$app->route('GET /categories/with-count', function() use ($categoryService) {
-    $result = $categoryService->getCategoriesWithRecipeCount();
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get popular categories
-$app->route('GET /categories/popular', function() use ($categoryService) {
-    $limit = $_GET['limit'] ?? 10;
-    $result = $categoryService->getPopularCategories($limit);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Get category statistics
-$app->route('GET /categories/@id/stats', function($id) use ($categoryService) {
-    $result = $categoryService->getCategoryStats($id);
-    jsonResponse($result, $result['success'] ? 200 : 400);
-});
-
-// Search categories
-$app->route('GET /categories/search', function() use ($categoryService) {
-    $query = $_GET['q'] ?? '';
-    $result = $categoryService->search($query);
-    jsonResponse($result, $result['success'] ? 200 : 400);
+/**
+ * @OA\Delete(
+ *     path="/categories/{id}",
+ *     tags={"Categories"},
+ *     summary="Delete category",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=200, description="Category deleted")
+ * )
+ */
+Flight::route('DELETE /categories/@id', function($id) {
+    $result = Flight::categoryService()->delete($id);
+    Flight::json($result, $result['success'] ? 200 : 400);
 });
