@@ -9,73 +9,76 @@ class CategoryService extends BaseService {
         parent::__construct(new CategoryDAO());
     }
 
-    // -------------------------------------------
-    // ADDITIONAL METHODS USED BY YOUR ROUTES
-    // -------------------------------------------
-
-    public function getCategoriesWithRecipeCount() {
+    public function get_all_with_recipe_count() {
         try {
-            $result = $this->dao->getAllWithRecipeCount();
             return [
                 "success" => true,
-                "data" => $result,
+                "data" => $this->dao->getAllWithRecipeCount(),
                 "message" => "Categories with recipe count retrieved"
             ];
         } catch (Exception $e) {
             return [
                 "success" => false,
-                "data" => null,
                 "message" => $e->getMessage()
             ];
         }
     }
 
-    public function getPopularCategories($limit = 10) {
+    public function get_all_ordered() {
         try {
-            $result = $this->dao->getPopular($limit);
             return [
                 "success" => true,
-                "data" => $result,
-                "message" => "Popular categories retrieved"
+                "data" => $this->dao->getAllOrdered(),
+                "message" => "Categories ordered retrieved"
             ];
         } catch (Exception $e) {
             return [
                 "success" => false,
-                "data" => null,
                 "message" => $e->getMessage()
             ];
         }
     }
 
-    public function getCategoryStats($id) {
+    public function search($term) {
         try {
-            $result = $this->dao->getStats($id);
             return [
                 "success" => true,
-                "data" => $result,
-                "message" => "Category statistics retrieved"
+                "data" => $this->dao->search($term),
+                "message" => "Search results"
             ];
         } catch (Exception $e) {
             return [
                 "success" => false,
-                "data" => null,
                 "message" => $e->getMessage()
             ];
         }
     }
 
-    public function search($query) {
+    public function can_delete($id) {
         try {
-            $result = $this->dao->search($query);
             return [
                 "success" => true,
-                "data" => $result,
-                "message" => "Search results retrieved"
+                "data" => $this->dao->canDelete($id),
+                "message" => "Delete check complete"
             ];
         } catch (Exception $e) {
             return [
                 "success" => false,
-                "data" => null,
+                "message" => $e->getMessage()
+            ];
+        }
+    }
+
+    public function get_by_name($name) {
+        try {
+            return [
+                "success" => true,
+                "data" => $this->dao->getByName($name),
+                "message" => "Category by name retrieved"
+            ];
+        } catch (Exception $e) {
+            return [
+                "success" => false,
                 "message" => $e->getMessage()
             ];
         }

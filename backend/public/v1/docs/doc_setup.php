@@ -1,4 +1,5 @@
 <?php
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Info(
@@ -14,7 +15,7 @@
 
 /**
  * @OA\Server(
- *     url="http://localhost:8030",
+ *     url="http://localhost/web-project/backend",
  *     description="Local API Server"
  * )
  */

@@ -11,12 +11,12 @@ class BaseService {
     public function get_all(){
         return [
             "success" => true,
-            "data" => $this->dao->get_all()
+            "data" => $this->dao->getAll()
         ];
     }
 
     public function get_by_id($id){
-        $item = $this->dao->get_by_id($id);
+        $item = $this->dao->getById($id);  // ← FIX
 
         return [
             "success" => $item ? true : false,
@@ -36,7 +36,7 @@ class BaseService {
     public function update($entity, $id, $id_column = "id"){
         return [
             "success" => true,
-            "data" => $this->dao->update($entity, $id, $id_column),
+            "data" => $this->dao->update($entity, $id),
             "message" => "Record updated"
         ];
     }

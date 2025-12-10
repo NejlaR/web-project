@@ -2,97 +2,149 @@
 
 require_once 'BaseDAO.php';
 
-/**
- * RecipeDAO - Data Access Object for recipes table
- * Handles CRUD operations for recipes
- */
 class RecipeDAO extends BaseDAO {
-    
+
     public function __construct() {
-        parent::__construct('recipes');
+        parent::__construct('recipes', 'recipe_id');
     }
-    
-    /**
-     * Create a new recipe
-     * @param array $data
-     * @return int|false - Returns recipe ID on success, false on failure
-     */
+
     public function create($data) {
         return $this->add($data);
     }
-    
-    /**
-     * Update an existing recipe
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
+
     public function updateRecipe($id, $data) {
         return $this->update($data, $id);
     }
-    
-    /**
-     * Get recipe with additional information (user, category, average rating)
-     * @param int $id
-     * @return array|null
-     */
+
+    /* ========================
+       GET RECIPE WITH DETAILS
+       ======================== */
     public function getByIdWithDetails($id) {
-        return $this->query_unique("SELECT r.*, u.name as user_name, c.name as category_name,
-                         AVG(rev.rating) as avg_rating, COUNT(rev.id) as review_count
-                  FROM {$this->table_name} r 
-                  LEFT JOIN users u ON r.user_id = u.id 
-                  LEFT JOIN categories c ON r.category_id = c.id 
-                  LEFT JOIN reviews rev ON r.id = rev.recipe_id
-                  WHERE r.id = :id 
-                  GROUP BY r.id", ['id' => $id]);
+
+        $query = "
+            SELECT 
+                r.recipe_id,
+                r.category_id,
+                r.title,
+                r.description,
+                r.created_at,
+                c.name AS category_name,
+                i.ingredient_id,
+                i.name AS ingredient_name,
+                i.quantity
+            FROM recipes r
+            LEFT JOIN categories c ON r.category_id = c.category_id
+            LEFT JOIN ingredients i ON r.recipe_id = i.recipe_id
+            WHERE r.recipe_id = :id
+        ";
+
+        $rows = $this->query($query, ['id' => $id]);
+
+        if (empty($rows)) {
+            return null;
+        }
+
+        $recipe = [
+            "recipe_id"     => $rows[0]["recipe_id"],
+            "category_id"   => $rows[0]["category_id"],
+            "category_name" => $rows[0]["category_name"],
+            "title"         => $rows[0]["title"],
+            "description"   => $rows[0]["description"],
+            "created_at"    => $rows[0]["created_at"],
+            "ingredients"   => []
+        ];
+
+        foreach ($rows as $row) {
+            if (!empty($row["ingredient_id"])) {
+                $recipe["ingredients"][] = [
+                    "ingredient_id" => $row["ingredient_id"],
+                    "name"          => $row["ingredient_name"],
+                    "quantity"      => $row["quantity"]
+                ];
+            }
+        }
+
+        return $recipe;
     }
-    
-    /**
-     * Get all recipes with basic details
-     * @return array
-     */
+
+    /* ============================
+       GET ALL RECIPES WITH DETAILS
+       ============================ */
     public function getAllWithDetails() {
-        return $this->query("SELECT r.*, u.name as user_name, c.name as category_name,
-                         AVG(rev.rating) as avg_rating, COUNT(rev.id) as review_count
-                  FROM {$this->table_name} r 
-                  LEFT JOIN users u ON r.user_id = u.id 
-                  LEFT JOIN categories c ON r.category_id = c.id 
-                  LEFT JOIN reviews rev ON r.id = rev.recipe_id
-                  GROUP BY r.id 
-                  ORDER BY r.created_at DESC", []);
+
+        $query = "
+            SELECT 
+                r.recipe_id,
+                r.category_id,
+                r.title,
+                r.description,
+                r.created_at,
+                c.name AS category_name,
+                i.ingredient_id,
+                i.name AS ingredient_name,
+                i.quantity
+            FROM recipes r
+            LEFT JOIN categories c ON r.category_id = c.category_id
+            LEFT JOIN ingredients i ON r.recipe_id = i.recipe_id
+            ORDER BY r.recipe_id
+        ";
+
+        $rows = $this->query($query);
+
+        $result = [];
+
+        foreach ($rows as $row) {
+
+            $id = $row['recipe_id'];
+
+            if (!isset($result[$id])) {
+                $result[$id] = [
+                    "recipe_id"     => $row["recipe_id"],
+                    "category_id"   => $row["category_id"],
+                    "category_name" => $row["category_name"],
+                    "title"         => $row["title"],
+                    "description"   => $row["description"],
+                    "created_at"    => $row["created_at"],
+                    "ingredients"   => []
+                ];
+            }
+
+            if (!empty($row["ingredient_id"])) {
+                $result[$id]["ingredients"][] = [
+                    "ingredient_id" => $row["ingredient_id"],
+                    "name"          => $row["ingredient_name"],
+                    "quantity"      => $row["quantity"]
+                ];
+            }
+        }
+
+        return array_values($result);
     }
-    
-    /**
-     * Get recipes by user
-     * @param int $userId
-     * @return array
-     */
+
+    /* ===========================
+       GET BY USER — YOU HAVE NO USER ID
+       RETURN EMPTY ARRAY
+       =========================== */
     public function getByUser($userId) {
-        return $this->query("SELECT r.*, c.name as category_name,
-                         AVG(rev.rating) as avg_rating, COUNT(rev.id) as review_count
-                  FROM {$this->table_name} r 
-                  LEFT JOIN categories c ON r.category_id = c.id 
-                  LEFT JOIN reviews rev ON r.id = rev.recipe_id
-                  WHERE r.user_id = :user_id 
-                  GROUP BY r.id 
-                  ORDER BY r.created_at DESC", ['user_id' => $userId]);
+        return []; // jer tabela nema user_id
     }
-    
-    /**
-     * Search recipes by title or description
-     * @param string $searchTerm
-     * @return array
-     */
+
+    /* ======================
+          SEARCH RECIPES
+       ====================== */
     public function search($searchTerm) {
         $searchParam = '%' . $searchTerm . '%';
-        return $this->query("SELECT r.*, u.name as user_name, c.name as category_name,
-                         AVG(rev.rating) as avg_rating, COUNT(rev.id) as review_count
-                  FROM {$this->table_name} r 
-                  LEFT JOIN users u ON r.user_id = u.id 
-                  LEFT JOIN categories c ON r.category_id = c.id 
-                  LEFT JOIN reviews rev ON r.id = rev.recipe_id
-                  WHERE r.title LIKE :search OR r.description LIKE :search 
-                  GROUP BY r.id 
-                  ORDER BY r.title", ['search' => $searchParam]);
+
+        return $this->query("
+            SELECT 
+                r.*, 
+                c.name AS category_name
+            FROM recipes r
+            LEFT JOIN categories c ON r.category_id = c.category_id
+            WHERE r.title LIKE :search 
+               OR r.description LIKE :search
+            ORDER BY r.title
+        ", ['search' => $searchParam]);
     }
 }
+
