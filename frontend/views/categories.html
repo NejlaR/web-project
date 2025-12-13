@@ -17,18 +17,62 @@
 <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
+
       <div class="modal-header">
         <h5 class="modal-title" id="categoryModalLabel">Category Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body text-center">
         <img id="catImage" src="" class="rounded mb-3" style="width:120px; height:120px; object-fit:cover;">
         <h4 id="catName"></h4>
         <p class="text-muted" id="catCount"></p>
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ADD CATEGORY MODAL -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Add Category</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="addCategoryForm">
+
+          <div class="mb-3">
+            <label class="form-label">Category Name</label>
+            <input type="text" id="newCatName" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Number of Recipes</label>
+            <input type="number" id="newCatCount" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input type="text" id="newCatImage" class="form-control" placeholder="assets/img/category_6.jpg">
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button id="saveCategoryBtn" class="btn btn-primary">Save</button>
+      </div>
+
     </div>
   </div>
 </div>

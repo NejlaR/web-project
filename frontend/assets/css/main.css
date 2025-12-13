@@ -26,3 +26,12 @@ footer { position: relative; bottom: 0; width: 100%; }
 @media (max-width: 576px) {
   .container { padding: 0 12px; }
 }
+/* === CATEGORY IMAGE FIX === */
+.category-card img {
+  width: 100%;
+  height: 180px;        /* svi isti */
+  object-fit: cover;   /* lijepo kropanje */
+  display: block;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
