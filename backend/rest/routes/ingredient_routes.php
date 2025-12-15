@@ -6,6 +6,71 @@
  * =============================
  */
 
+/* =======================================================
+ *      EXTRA ROUTES — MUST COME BEFORE CRUD ROUTES
+ * ======================================================= */
+
+
+/**
+ * @OA\Get(
+ *     path="/ingredients/with-count",
+ *     tags={"Ingredients"},
+ *     summary="Get all ingredients with usage count",
+ *     @OA\Response(response=200, description="Ingredients with usage count")
+ * )
+ */
+Flight::route('GET /ingredients/with-count', function() {
+    $result = Flight::ingredientService()->get_all_with_usage_count();
+    Flight::json($result, 200);
+});
+
+
+/**
+ * @OA\Get(
+ *     path="/ingredients/search/{term}",
+ *     tags={"Ingredients"},
+ *     summary="Search ingredients",
+ *     @OA\Parameter(
+ *         name="term",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="string", example="sugar")
+ *     ),
+ *     @OA\Response(response=200, description="Search results")
+ * )
+ */
+Flight::route('GET /ingredients/search/@term', function($term) {
+    $result = Flight::ingredientService()->search($term);
+    Flight::json($result, 200);
+});
+
+
+/**
+ * @OA\Get(
+ *     path="/ingredients/name/{name}",
+ *     tags={"Ingredients"},
+ *     summary="Get ingredient by name",
+ *     @OA\Parameter(
+ *         name="name",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="string", example="Salt")
+ *     ),
+ *     @OA\Response(response=200, description="Ingredient by name")
+ * )
+ */
+Flight::route('GET /ingredients/name/@name', function($name) {
+    $result = Flight::ingredientService()->get_by_name($name);
+    Flight::json($result, 200);
+});
+
+
+
+/* =======================================================
+ *      STANDARD CRUD ROUTES
+ * ======================================================= */
+
+
 /**
  * @OA\Get(
  *     path="/ingredients",
@@ -18,6 +83,8 @@ Flight::route('GET /ingredients', function() {
     $result = Flight::ingredientService()->get_all();
     Flight::json($result, $result['success'] ? 200 : 400);
 });
+
+
 
 /**
  * @OA\Get(
@@ -39,6 +106,8 @@ Flight::route('GET /ingredients/@id', function($id) {
     Flight::json($result, $result['success'] ? 200 : 404);
 });
 
+
+
 /**
  * @OA\Post(
  *     path="/ingredients",
@@ -47,8 +116,7 @@ Flight::route('GET /ingredients/@id', function($id) {
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
- *             required={"recipe_id","name"},
- *             @OA\Property(property="recipe_id", type="integer", example=1),
+ *             required={"name"},
  *             @OA\Property(property="name", type="string", example="Sugar"),
  *             @OA\Property(property="quantity", type="string", example="100g")
  *         )
@@ -58,9 +126,15 @@ Flight::route('GET /ingredients/@id', function($id) {
  */
 Flight::route('POST /ingredients', function() {
     $data = Flight::request()->data->getData();
+
+    // Prevent invalid fields from breaking insert
+    unset($data['recipe_id']);
+
     $result = Flight::ingredientService()->add($data);
     Flight::json($result, $result['success'] ? 201 : 400);
 });
+
+
 
 /**
  * @OA\Put(
@@ -86,9 +160,15 @@ Flight::route('POST /ingredients', function() {
  */
 Flight::route('PUT /ingredients/@id', function($id) {
     $data = Flight::request()->data->getData();
+
+    // Prevent sending invalid column
+    unset($data['recipe_id']);
+
     $result = Flight::ingredientService()->update($data, $id);
     Flight::json($result, $result['success'] ? 200 : 400);
 });
+
+
 
 /**
  * @OA\Delete(
@@ -108,3 +188,4 @@ Flight::route('DELETE /ingredients/@id', function($id) {
     $result = Flight::ingredientService()->delete($id);
     Flight::json($result, $result['success'] ? 200 : 400);
 });
+

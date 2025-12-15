@@ -42,13 +42,14 @@ class IngredientDAO extends BaseDAO {
     
     /**
      * Get ingredients with usage count in recipes
+     * FIXED: uses correct primary key ingredient_id
      * @return array
      */
     public function getAllWithUsageCount() {
-        return $this->query("SELECT i.*, COUNT(ri.recipe_id) as usage_count 
-                  FROM {$this->table_name} i 
-                  LEFT JOIN recipe_ingredients ri ON i.id = ri.ingredient_id 
-                  GROUP BY i.id 
+        return $this->query("SELECT i.*, COUNT(ri.recipe_id) AS usage_count
+                  FROM {$this->table_name} i
+                  LEFT JOIN recipe_ingredients ri ON i.ingredient_id = ri.ingredient_id
+                  GROUP BY i.ingredient_id
                   ORDER BY i.name", []);
     }
     
@@ -58,9 +59,14 @@ class IngredientDAO extends BaseDAO {
      * @return array
      */
     public function search($searchTerm) {
-        $searchParam = '%' . $searchTerm . '%';
-        return $this->query("SELECT * FROM {$this->table_name} 
-                  WHERE name LIKE :search OR description LIKE :search 
-                  ORDER BY name", ['search' => $searchParam]);
-    }
+    $searchParam = '%' . $searchTerm . '%';
+
+    return $this->query(
+        "SELECT * FROM {$this->table_name}
+         WHERE name LIKE :search
+         ORDER BY name",
+        ['search' => $searchParam]
+    );
+}
+
 }

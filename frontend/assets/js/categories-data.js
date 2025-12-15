@@ -1,49 +1,141 @@
-// === Sample categories data ===
-const sampleCategories = [
-  { id: 1, name: 'Breakfast', count: 12, image: 'assets/img/category_1.jpg', color: '#FF7A7A' },
-  { id: 2, name: 'Lunch', count: 25, image: 'assets/img/category_2.jpg', color: '#FFB86B' },
-  { id: 3, name: 'Dinner', count: 48, image: 'assets/img/category_3.jpg', color: '#6BCB77' },
-  { id: 4, name: 'Dessert', count: 18, image: 'assets/img/category_4.jpg', color: '#7A9BFF' },
-  { id: 5, name: 'Beverage', count: 7, image: 'assets/img/category_5.jpg', color: '#FFD36B' }
-];
+// ==========================================
+//   CATEGORY SERVICE (TVOJ, NE MIJENJAN)
+// ==========================================
 
-// Simulacija API poziva
-function getCategories() {
-  return new Promise(resolve => setTimeout(() => resolve(sampleCategories), 120));
-}
+let CategoryService = {
 
-// === Render kategorija ===
+  getAll: function(callback){
+      RestClient.get("categories", res => callback(res.data || res));
+  },
+
+  getById: function(id, callback){
+      RestClient.get("categories/" + id, res => callback(res.data || res));
+  },
+
+  search: function(term, callback){
+      RestClient.get("categories/search/" + term, res => callback(res.data || res));
+  },
+
+  getOrdered: function(callback){
+      RestClient.get("categories/ordered", res => callback(res.data || res));
+  },
+
+  getWithCount: function(callback){
+      RestClient.get("categories/with-count", res => callback(res.data || res));
+  },
+
+  add: function(category, callback){
+      RestClient.post("categories", category, callback);
+  },
+
+  update: function(id, category, callback){
+      RestClient.put("categories/" + id, category, callback);
+  },
+
+  delete: function(id, callback){
+      RestClient.delete("categories/" + id, callback);
+  }
+};
+
+
+// ==========================================
+//   RENDER CATEGORIES (API + SLIKE + BROJEVI)
+// ==========================================
+
 function renderCategories() {
-  getCategories().then(categories => {
-    const $list = $("#categoriesList");
-    $list.empty();
+
+  const $list = $("#categoriesList");
+  $list.empty();
+
+  CategoryService.getWithCount(function (categories) {
+
+    // sigurnosna provjera
+    if (!Array.isArray(categories)) {
+      console.error("Expected array, got:", categories);
+      return;
+    }
 
     categories.forEach(cat => {
-      const card = `
+
+      $list.append(`
         <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
           <div class="card h-100 shadow-sm border-0 category-card"
-               style="cursor:pointer; background-color:${cat.color}20;"
+               style="cursor:pointer;"
                data-id="${cat.id}">
-            <img src="${cat.image}" class="card-img-top rounded-top" alt="${cat.name}"
+            <img src="${cat.image || 'assets/img/default_category.jpg'}"
+                 class="card-img-top rounded-top"
                  style="height:160px; object-fit:cover;">
             <div class="card-body text-center">
               <h5 class="card-title mb-1">${cat.name}</h5>
-              <p class="text-muted mb-0">${cat.count} recipes</p>
+              <p class="text-muted mb-0">${cat.recipe_count || 0} recipes</p>
             </div>
           </div>
-        </div>`;
-      $list.append(card);
+        </div>
+      `);
+
     });
 
-    // Klik na karticu otvara modal
-    $(".category-card").on("click", function() {
-      const id = $(this).data("id");
-      const cat = categories.find(c => c.id === id);
-
-      $("#catImage").attr("src", cat.image);
-      $("#catName").text(cat.name);
-      $("#catCount").text(`${cat.count} recipes`);
-      $("#categoryModal").modal("show");
-    });
   });
 }
+
+
+// ==========================================
+//   OPEN ADD CATEGORY MODAL (ADMIN)
+// ==========================================
+
+$(document).on("click", "#btnNewCategory", function () {
+
+  $("#newCatName").val("");
+  $("#newCatCount").val("");
+  $("#newCatImage").val("");
+
+  $("#addCategoryModal").modal("show");
+});
+
+
+// ==========================================
+//   SAVE CATEGORY (API – ADMIN ONLY)
+// ==========================================
+
+$(document).on("click", "#saveCategoryBtn", function () {
+
+  const name = $("#newCatName").val().trim();
+  const count = parseInt($("#newCatCount").val());
+  let image = $("#newCatImage").val().trim();
+
+  if (!name || isNaN(count)) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  if (!image) {
+    image = "assets/img/default_category.jpg";
+  }
+
+  CategoryService.add(
+    { name, count, image },
+    function () {
+      $("#addCategoryModal").modal("hide");
+      renderCategories();
+    }
+  );
+});
+
+
+// ==========================================
+//   CATEGORY CARD CLICK (LOAD FROM API)
+// ==========================================
+
+$(document).on("click", ".category-card", function () {
+
+  const id = $(this).data("id");
+
+  CategoryService.getById(id, function (cat) {
+
+    $("#catImage").attr("src", cat.image || "assets/img/default_category.jpg");
+    $("#catName").text(cat.name);
+    $("#catCount").text((cat.recipe_count || 0) + " recipes");
+
+    $("#categoryModal").modal("show");
+  });
+});

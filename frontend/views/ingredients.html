@@ -26,6 +26,53 @@
     </div>
   </div>
 
+  <!-- EDIT INGREDIENT MODAL -->
+  <div class="modal fade" id="editIngredientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Ingredient</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="editIngredientForm">
+
+            <input type="hidden" id="editId">
+
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" id="editName" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Unit</label>
+              <input type="text" id="editUnit" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Stock</label>
+              <input type="number" id="editStock" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Notes</label>
+              <textarea id="editNotes" class="form-control"></textarea>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="saveIngredientBtn" class="btn btn-primary">Save</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Ingredient Detail Modal -->
   <div class="modal fade" id="ingredientModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -46,12 +93,16 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Edit</button>
+          <button type="button" class="btn btn-primary" id="openEditFromDetail">Edit</button>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Ingredient script files -->
+<script src="assets/js/ingredients-data.js"></script>
+<script src="assets/js/ingredients.js"></script>
 
 <style>
   #ingredientsTable img {

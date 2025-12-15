@@ -9,7 +9,8 @@ require_once 'BaseDAO.php';
 class RoleDAO extends BaseDAO {
     
     public function __construct() {
-        parent::__construct('roles');
+        // OVDE JE BITNA PROMJENA → ID kolona se zove 'id'
+        parent::__construct('roles', 'id');
     }
     
     /**
@@ -37,7 +38,10 @@ class RoleDAO extends BaseDAO {
      * @return array|null
      */
     public function getByName($name) {
-        return $this->query_unique("SELECT * FROM {$this->table_name} WHERE name = :name", ['name' => $name]);
+        return $this->query_unique(
+            "SELECT * FROM {$this->table_name} WHERE name = :name",
+            ['name' => $name]
+        );
     }
     
     /**
@@ -54,6 +58,11 @@ class RoleDAO extends BaseDAO {
      * @return array
      */
     public function getAllOrdered() {
-        return $this->query("SELECT * FROM {$this->table_name} ORDER BY name", []);
+        return $this->query(
+            "SELECT * FROM {$this->table_name} ORDER BY name",
+            []
+        );
     }
 }
+
+?>
